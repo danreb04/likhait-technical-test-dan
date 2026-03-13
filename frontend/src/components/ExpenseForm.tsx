@@ -4,12 +4,13 @@
 
 import React from "react";
 import { ExpenseFormData } from "../types";
-import { EXPENSE_CATEGORIES } from "../constants/categories";
 import { TextField, SelectBox, Button } from "../vibes";
 import { useExpenseForm } from "../hooks/useExpenseForm";
+import { formatDate } from "../utils/expenseUtils";
 
 interface ExpenseFormProps {
   initialData?: Partial<ExpenseFormData>;
+  categories: string[];
   onSubmit: (data: ExpenseFormData) => Promise<void>;
   onCancel?: () => void;
   submitLabel?: string;
@@ -17,6 +18,7 @@ interface ExpenseFormProps {
 
 export function ExpenseForm({
   initialData,
+  categories,
   onSubmit,
   onCancel,
   submitLabel = "Add Expense",
@@ -26,6 +28,8 @@ export function ExpenseForm({
       initialData,
       onSubmit,
     });
+
+  const today = formatDate(new Date());
 
   const formStyle: React.CSSProperties = {
     display: "flex",
@@ -39,7 +43,7 @@ export function ExpenseForm({
     marginTop: "0.5rem",
   };
 
-  const categoryOptions = EXPENSE_CATEGORIES.map((category) => ({
+  const categoryOptions = categories.map((category) => ({
     value: category,
     label: category,
   }));
@@ -83,6 +87,7 @@ export function ExpenseForm({
         label="Date"
         type="date"
         value={formData.date}
+        max={today}
         onChange={(e) => handleChange("date", e.target.value)}
         error={errors.date}
         fullWidth
@@ -98,6 +103,7 @@ export function ExpenseForm({
         >
           {isSubmitting ? "Submitting..." : submitLabel}
         </Button>
+
         {onCancel && (
           <Button
             type="button"
